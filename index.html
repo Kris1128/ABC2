@@ -34,6 +34,27 @@
     -webkit-background-clip:text;background-clip:text;color:transparent;
   }
   .hero-head p{margin:0;color:#64748b;font-size:clamp(13px,2.6vw,16px)}
+
+  /* ---------- 音标表跳转按钮 ---------- */
+  .ipa-entry{text-align:center;margin-top:20px}
+  .ipa-entry a{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:12px 26px;
+    border-radius:999px;
+    text-decoration:none;
+    font-size:15px;font-weight:800;
+    color:#fff;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    box-shadow:0 8px 22px rgba(99,102,241,.32);
+    transition:transform .16s ease, box-shadow .16s ease, filter .16s ease;
+  }
+  .ipa-entry a:hover{
+    transform:translateY(-3px);
+    box-shadow:0 14px 30px rgba(99,102,241,.42);
+    filter:brightness(1.06);
+  }
+  .ipa-entry a:active{transform:scale(.97)}
+  .ipa-entry a .arw{font-size:13px;opacity:.8}
   .foot{text-align:center;color:#94a3b8;font-size:12.5px;margin-top:34px}
 
   .grid{
@@ -185,6 +206,12 @@
     <header class="hero-head">
       <h1>26 个英文字母</h1>
       <p>点击任意字母，学习「大小写 · 音标发音 · 常见单词」</p>
+      <!-- 新增：音标表跳转按钮 -->
+      <div class="ipa-entry">
+        <a href="https://biemoyu.com/yingyuyinbiao/" target="_blank" rel="noopener noreferrer">
+          📊 英语音标表 · 在线听发音 <span class="arw">↗</span>
+        </a>
+      </div>
     </header>
     <div class="grid" id="grid"></div>
     <p class="foot">🔊 请开启设备声音 · 建议使用 Chrome / Edge / Safari</p>
@@ -332,6 +359,7 @@ function speak(text, rate){
   if(enVoice) u.voice = enVoice;
   u.rate = rate || 0.85;
   u.pitch = 1;
+  u.volume = 1;
   synth.speak(u);
 }
 
@@ -371,7 +399,6 @@ function renderDetail(i){
   const L = LETTERS[i];
   const h = Math.round(i * 360 / LETTERS.length + 8) % 360;
   detailCard.style.setProperty('--h', h);
-  const first = L.words[0].w;
 
   detailCard.innerHTML = `
     <div class="d-hero">
@@ -400,7 +427,7 @@ function renderDetail(i){
     </div>
 
     <p class="hint">
-      💡 <b>名称</b>是唱字母歌时读的音；<b>发音</b>是它在单词里的常见音，点击它会朗读例词 <b>${first}</b>。
+      💡 <b>名称</b>是唱字母歌时读的音；<b>发音</b>是它在单词里的常见音。
     </p>
 
     <h2 class="sec-title">常见单词</h2>
@@ -453,9 +480,9 @@ detailCard.addEventListener('click', e => {
   if(audioBtn){
     const L = LETTERS[current];
     if(audioBtn.dataset.type === 'name'){
-      speak(L.ch, 0.8);              // 字母名称
+      speak(L.ch, 0.8);            // 仅朗读单个字母（字母名称）
     }else{
-      speak(L.words[0].w, 0.72);     // 字母发音 → 用首例词示范
+      speak(L.soundTts, 0.7);      // 仅朗读该字母的音标近似音
     }
     pulse(audioBtn);
     return;
